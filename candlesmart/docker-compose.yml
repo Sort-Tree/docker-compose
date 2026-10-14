@@ -1,0 +1,75 @@
+services:
+  app:
+    image: vibhanshuthakurdocker/candlesmart:1.0.8
+    container_name: candlesmart-web
+    restart: unless-stopped
+    env_file:
+      - .env.production
+    ports:
+      - "127.0.0.1:3000:3000"
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    networks:
+      - existing
+    labels:
+      application: candlesmart
+      environment: production
+      service: app
+    logging:
+      driver: gcplogs
+      options:
+        gcp-project: "candlesmart-101"
+        labels: "application,environment,service"
+        cache-disabled: "true"
+        mode: "non-blocking"
+        max-buffer-size: "1m"
+
+  worker:
+    image: vibhanshuthakurdocker/candlesmart-worker:1.0.8
+    container_name: candlesmart-worker
+    restart: unless-stopped
+    env_file:
+      - .env.production
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    networks:
+      - existing
+    labels:
+      application: candlesmart
+      environment: production
+      service: worker
+    logging:
+      driver: gcplogs
+      options:
+        gcp-project: "candlesmart-101"
+        labels: "application,environment,service"
+        cache-disabled: "true"
+        mode: "non-blocking"
+        max-buffer-size: "1m"
+
+  redis:
+    image: redis:7-alpine
+    restart: unless-stopped
+    volumes:
+      - candlesmart_redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+  ibkr:
+    image: vibhanshuthakurdocker/ibkr-gateway:1.0.5
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:5001:5000"
+
+
+networks:
+  existing:
+    external: true
+    name: candlesmart_default
+
+volumes:
+  candlesmart_redis_data:
+  candlesmart_mongo_data:
