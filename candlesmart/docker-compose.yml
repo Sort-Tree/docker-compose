@@ -1,6 +1,6 @@
 services:
   app:
-    image: vibhanshuthakurdocker/candlesmart:1.0.20
+    image: vibhanshuthakurdocker/candlesmart:1.0.21
     container_name: candlesmart-web
     restart: unless-stopped
     env_file:
@@ -8,8 +8,6 @@ services:
         required: false
       - path: /opt/app/.env.production
         required: false
-    ports:
-      - "127.0.0.1:3000:3000"
     extra_hosts:
       - "host.docker.internal:host-gateway"
     labels:
@@ -26,7 +24,7 @@ services:
         max-buffer-size: "1m"
 
   worker:
-    image: vibhanshuthakurdocker/candlesmart-worker:1.0.20
+    image: vibhanshuthakurdocker/candlesmart-worker:1.0.21
     container_name: candlesmart-worker
     restart: unless-stopped
     env_file:
@@ -60,6 +58,36 @@ services:
       timeout: 5s
       retries: 10
 
+  nginx:
+    image: nginx:1.30-alpine
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/conf.d/default.conf:ro
+      - letsencrypt:/etc/letsencrypt:ro
+      - certbot_www:/var/www/certbot:ro
+    # Reload every 6h so a certificate renewed by the certbot service is picked up.
+    command: /bin/sh -c 'while :; do sleep 6h; nginx -s reload; done & exec nginx -g "daemon off;"'
+    depends_on:
+      - app
+
+  certbot:
+    # Keep on the same release as certbot_image in infra/terraform/variables.tf.
+    image: certbot/certbot:v5.9.0
+    restart: unless-stopped
+    volumes:
+      - letsencrypt:/etc/letsencrypt
+      - certbot_www:/var/www/certbot
+    # Renews only within 30 days of expiry; checks twice a day.
+    entrypoint: /bin/sh -c 'trap exit TERM; while :; do certbot renew --webroot -w /var/www/certbot; sleep 12h & wait $${!}; done'
+
 volumes:
   candlesmart_redis_data:
   candlesmart_mongo_data:
+  # Created by the VM startup script, which issues the first certificate into it.
+  letsencrypt:
+    external: true
+    name: candlesmart_letsencrypt
+  certbot_www:
