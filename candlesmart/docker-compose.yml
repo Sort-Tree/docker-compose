@@ -1,10 +1,10 @@
 services:
   app:
-    image: vibhanshuthakurdocker/candlesmart:1.0.16
+    image: vibhanshuthakurdocker/candlesmart:1.0.17
     container_name: candlesmart-web
     restart: unless-stopped
     env_file:
-      - /opt/app/.env.production
+      - .env.production
     ports:
       - "127.0.0.1:3000:3000"
     extra_hosts:
@@ -25,7 +25,7 @@ services:
         max-buffer-size: "1m"
 
   worker:
-    image: vibhanshuthakurdocker/candlesmart-worker:1.0.16
+    image: vibhanshuthakurdocker/candlesmart-worker:1.0.17
     container_name: candlesmart-worker
     restart: unless-stopped
     env_file:
