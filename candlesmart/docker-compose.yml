@@ -1,6 +1,6 @@
 services:
   app:
-    image: vibhanshuthakurdocker/candlesmart:1.0.21
+    image: vibhanshuthakurdocker/candlesmart-private:cs-app_1.0.22
     container_name: candlesmart-web
     restart: unless-stopped
     env_file:
@@ -24,7 +24,7 @@ services:
         max-buffer-size: "1m"
 
   worker:
-    image: vibhanshuthakurdocker/candlesmart-worker:1.0.21
+    image: vibhanshuthakurdocker/candlesmart-private:cs-worker_1.0.22
     container_name: candlesmart-worker
     restart: unless-stopped
     env_file:
