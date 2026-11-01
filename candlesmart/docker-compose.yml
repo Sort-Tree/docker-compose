@@ -1,10 +1,13 @@
 services:
   app:
-    image: vibhanshuthakurdocker/candlesmart:1.0.18
+    image: vibhanshuthakurdocker/candlesmart:1.0.19
     container_name: candlesmart-web
     restart: unless-stopped
     env_file:
-      - .env.production
+      - path: .env.production
+        required: false
+      - path: /opt/app/.env.production
+        required: false
     ports:
       - "127.0.0.1:3000:3000"
     extra_hosts:
@@ -25,11 +28,14 @@ services:
         max-buffer-size: "1m"
 
   worker:
-    image: vibhanshuthakurdocker/candlesmart-worker:1.0.18
+    image: vibhanshuthakurdocker/candlesmart-worker:1.0.19
     container_name: candlesmart-worker
     restart: unless-stopped
     env_file:
-      - .env.production
+      - path: .env.production
+        required: false
+      - path: /opt/app/.env.production
+        required: false
     extra_hosts:
       - "host.docker.internal:host-gateway"
     networks:
