@@ -1,9 +1,9 @@
 name: doco-cd
 working_dir: doco-cd
-compose_files: [docker-compose.yaml]
+compose_files: [docker-compose.yml]
 timeout: 120
 
 ---
 name: candlesmart
 working_dir: candlesmart
-compose_files: [docker-compose.yaml]
+compose_files: [docker-compose.yml]
