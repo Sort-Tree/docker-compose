@@ -1,6 +1,6 @@
 services:
   app:
-    image: vibhanshuthakurdocker/candlesmart:1.0.19
+    image: vibhanshuthakurdocker/candlesmart:1.0.20
     container_name: candlesmart-web
     restart: unless-stopped
     env_file:
@@ -12,8 +12,6 @@ services:
       - "127.0.0.1:3000:3000"
     extra_hosts:
       - "host.docker.internal:host-gateway"
-    networks:
-      - existing
     labels:
       application: candlesmart
       environment: production
@@ -28,7 +26,7 @@ services:
         max-buffer-size: "1m"
 
   worker:
-    image: vibhanshuthakurdocker/candlesmart-worker:1.0.19
+    image: vibhanshuthakurdocker/candlesmart-worker:1.0.20
     container_name: candlesmart-worker
     restart: unless-stopped
     env_file:
@@ -38,8 +36,6 @@ services:
         required: false
     extra_hosts:
       - "host.docker.internal:host-gateway"
-    networks:
-      - existing
     labels:
       application: candlesmart
       environment: production
@@ -63,11 +59,6 @@ services:
       interval: 10s
       timeout: 5s
       retries: 10
-
-networks:
-  existing:
-    external: true
-    name: candlesmart_default
 
 volumes:
   candlesmart_redis_data:
