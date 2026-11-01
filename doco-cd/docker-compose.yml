@@ -20,6 +20,8 @@ services:
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
       - data:/data
+      - /opt/app:/opt/app:ro
+      
 
     # The health gate decides whether the new version is kept. Without a
     # healthcheck doco-cd falls back to running `doco-cd healthcheck` inside
